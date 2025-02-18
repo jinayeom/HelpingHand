@@ -24,7 +24,7 @@ export default function ChatPage({
   params,
 }: {
   params: Promise<{ messagesId: string }>;
-  searchParams: Promise<{[key: string]: string}>;
+  searchParams: Promise<{ [key: string]: string }>;
 }) {
   const messagesId = use(params).messagesId;
   const [messages, setMessages] = useState<MessageType[]>([]);
@@ -39,25 +39,33 @@ export default function ChatPage({
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-          router.push("/user/signin");
-          return (<div>You need to be logged in to access this page.</div>)
+        router.push("/user/signin");
+        return <div>You need to be logged in to access this page.</div>;
       } else {
-          setUid(user.uid);
+        setUid(user.uid);
       }
-    })
+    });
   }, [router]);
 
   useEffect(() => {
-      if (uid) {
-          axios.get<User>(`user/${uid}`).then(resp => setUser(resp.data));
-      }
-  }, [uid])
+    if (uid) {
+      axios
+        .get<User>(`user/${uid}`, {
+          headers: { skipAuth: true },
+        })
+        .then((resp) => setUser(resp.data));
+    }
+  }, [uid]);
 
   useEffect(() => {
     if (otherUid) {
-      axios.get<User>(`user/${otherUid}`).then(resp => setOtherUser(resp.data));
+      axios
+        .get<User>(`user/${otherUid}`, {
+          headers: { skipAuth: true },
+        })
+        .then((resp) => setOtherUser(resp.data));
     }
-  }, [otherUid])
+  }, [otherUid]);
 
   useEffect(() => {
     const q = query(
@@ -96,24 +104,24 @@ export default function ChatPage({
   return (
     <div className={styles.chatbox}>
       <div className={styles.header}>
-        {otherUser ? <>
-        {otherUser.name}
-        <Image
-          src={otherUser.profile_img}
-          alt={otherUser?.name}
-          width={50}
-          height={50}
-        />
-        </> : null}
+        {otherUser ? (
+          <>
+            {otherUser.name}
+            <Image
+              src={otherUser.profile_img}
+              alt={otherUser?.name}
+              width={50}
+              height={50}
+            />
+          </>
+        ) : null}
       </div>
       <div className={styles.messages}>
-        {user ? messages.map((message) => (
-          <Message
-            key={message.id}
-            message={message}
-            uid={user?.uid}
-          />
-        )) : null}
+        {user
+          ? messages.map((message) => (
+              <Message key={message.id} message={message} uid={user?.uid} />
+            ))
+          : null}
       </div>
       {/* when a new message enters the chat, the screen scrolls down to the scroll div */}
       <span ref={scroll}></span>

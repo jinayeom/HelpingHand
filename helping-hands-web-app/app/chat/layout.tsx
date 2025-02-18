@@ -34,7 +34,9 @@ export default function ChatLayout({
 
   useEffect(() => {
     async function getConnections() {
-      const connections = await axios.get<Connection[]>(`connections/${uid}`);
+      const connections = await axios.get<Connection[]>(`connections/${uid}`, {
+        headers: { skipAuth: true },
+      });
 
       const userIdsWithMessages = connections.data
         .filter((connection) => connection.status == "accepted")
@@ -50,7 +52,9 @@ export default function ChatLayout({
       if (userIdsWithMessages.length > 0) {
         for (const { uid, messagesId } of userIdsWithMessages) {
           try {
-            const userResponse = await axios.get<User>(`user/${uid}`);
+            const userResponse = await axios.get<User>(`user/${uid}`, {
+              headers: { skipAuth: true },
+            });
             const userWithMessagesId: UserWithMessagesId = {
               ...userResponse.data,
               messagesId,

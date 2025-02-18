@@ -30,7 +30,6 @@ const SendMessage = ({
     const user = await axios.get<User>(`user/${uid}`);
     // .then((resp) => resp.data);
 
-    console.log(user.data.uid, "here");
 
     if (!user) {
       throw Error("ooopppppsss");

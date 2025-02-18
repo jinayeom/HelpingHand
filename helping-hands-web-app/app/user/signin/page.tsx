@@ -3,10 +3,7 @@
 import { firebaseApp } from "@/lib/firebase/clientApp";
 import { useRouter } from "next/navigation";
 import { useState, FormEvent } from "react";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import "./styles.css";
 import Link from "next/link";
 import Image from "next/image";
@@ -26,6 +23,9 @@ export default function Register() {
     signInWithEmailAndPassword(auth, email, password)
       .then(async (user) => {
         const uid = user.user.uid;
+        const token = await user.user.getIdToken();
+
+        localStorage.setItem("token", token);
         router.push(`${uid}`);
       })
       .catch((err) => setError(err.message));
@@ -34,7 +34,12 @@ export default function Register() {
   return (
     <div className="background">
       <div className="signin-container">
-        <Image src="/heartinhand.png" alt="Helping Hands" width={200} height={200}/>
+        <Image
+          src="/heartinhand.png"
+          alt="Helping Hands"
+          width={200}
+          height={200}
+        />
         <h1>Welcome back</h1>
         {error == "" ? null : <div>{error}</div>}
         <form className="register-form" onSubmit={handleSubmit}>

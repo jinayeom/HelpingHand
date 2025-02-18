@@ -1,20 +1,29 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { User, type Message } from "@/app/models/models";
 import styles from "./message.module.css";
 import axios from "@/app/utils/axios_instance";
-import Image from 'next/image';
+import Image from "next/image";
 
-export default function Message({ message, uid }: { message: Message; uid: string }) {
+export default function Message({
+  message,
+  uid,
+}: {
+  message: Message;
+  uid: string;
+}) {
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
     if (uid) {
-      axios.get<User>(`user/${message.senderId}`)
-      .then(resp => setUser(resp.data));
+      axios
+        .get<User>(`user/${message.senderId}`, {
+          headers: { skipAuth: true },
+        })
+        .then((resp) => setUser(resp.data));
     }
-  }, [message.senderId, uid])
+  }, [message.senderId, uid]);
 
   return (
     <div
@@ -31,4 +40,4 @@ export default function Message({ message, uid }: { message: Message; uid: strin
       <p className={styles.text}>{message.content}</p>
     </div>
   );
-};
+}
